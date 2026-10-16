@@ -35,7 +35,7 @@ ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 
 X_BOCA = 155.0                     # a boca do cano (cano de 6")
 R_ALMA = 6.4                       # calibre .50
-MEIA_ARMACAO = 12.5
+MEIA_ARMACAO = 14.5                # a armação acompanha a largura do ferrolho e do cano
 ANG_CABO = math.radians(12)        # o cabo (e o pente) inclinados para trás
 SOBE = Vector((math.sin(ANG_CABO), 0, math.cos(ANG_CABO)))     # subindo pelo cabo
 BASE_PENTE = Vector((-73.0, 0, -115))                           # centro do fundo do pente, no cabo
@@ -643,9 +643,11 @@ def construir():
     aco_pente = material("aco_pente", (0.20, 0.205, 0.22), metal=1.0, rug=0.40)
     P = {}
 
-    # ---- bloco do cano: topo liso 3 mm abaixo do ferrolho, lados retos com um painel rebaixado comprido, a parte de
-    # baixo (onde fica o cilindro de gás) afunilada e com as fendas do trilho por baixo; alma .50 e coroa na boca
-    secao = [(14, 11, 3), (14, -6, 4), (9, -19, 3), (7, -22, 2), (-7, -22, 2), (-9, -19, 3), (-14, -6, 4), (-14, 11, 3)]
+    # ---- bloco do cano: alto e grosso (32 mm), com os lados afinando só em cima, para um topo estreito 3 mm abaixo
+    # do ferrolho (pedido dele: "mais alta e grossa, mais fina na parte de cima"; "a parte de baixo não é afinada":
+    # dali para baixo os lados descem retos até a base, onde ficam as fendas do trilho); painel rebaixado no meio,
+    # alma .50 e coroa na boca
+    secao = [(8.5, 15, 2), (16, 4, 2.5), (16, -22, 3), (-16, -22, 3), (-16, 4, 2.5), (-8.5, 15, 2)]
     cano = prisma_x("cano", secao, 0, X_BOCA, 1.4, inox)
     cortes = [tornear("_alma", [(70, 0), (70, R_ALMA), (X_BOCA + 5, R_ALMA), (X_BOCA + 5, 0)], None, seg=64),
               tornear("_coroa", [(X_BOCA - 2.2, 0), (X_BOCA - 2.2, R_ALMA), (X_BOCA + 0.6, R_ALMA + 2.8),
@@ -653,45 +655,50 @@ def construir():
     cortes += [girar(caixa(f"_raia{k}", 72, X_BOCA + 5, -0.9, 0.9, R_ALMA - 0.4, R_ALMA + 0.5),
                      (math.radians(30 + 60 * k), 0, 0), (0, 0, 0)) for k in range(6)]
     for lado in (-1, 1):
-        cortes.append(deslocar(almofada(f"_painel{lado}", [(8, -3.5), (134, -3.5), (134, 7.5), (8, 7.5)], 0.8, 0.3,
-                                        None, raio_canto=4), (0, lado * 14, 0)))
+        cortes.append(deslocar(almofada(f"_painel{lado}", [(8, -4.5), (134, -4.5), (134, 2.5), (8, 2.5)], 0.8, 0.3,
+                                        None, raio_canto=3), (0, lado * 16, 0)))
     cortes += [caixa(f"_trilho{k}", 40 + 9 * k, 44.5 + 9 * k, -12, 12, -24, -19.5) for k in range(12)]
     booleano(cano, cortes)
     P["cano"] = acabar(cano, 0.3, 2)
-    P["massa_mira"] = acabar(almofada("massa_mira", [(140, 10), (152, 10), (151.6, 15), (149, 16.5), (143.5, 16.5),
-                                                     (141, 13.5)], 1.6, 0.5, escuro))
+    P["massa_mira"] = acabar(almofada("massa_mira", [(140, 14), (152, 14), (151.6, 19), (149, 20.5), (143.5, 20.5),
+                                                     (141, 17.5)], 1.6, 0.5, escuro))
 
     # ---- capuz da câmara (a traseira do cano, dentro do ferrolho): aparece pela janela e com o ferrolho aberto
     capuz = tornear("capuz", [(-36, 0), (-36, 8.4), (-35.2, 9.0), (0.5, 9.0), (0.5, 0)], inox, seg=64)
     booleano(capuz, [tornear("_camara", [(-38, 0), (-38, 7.3), (-26, 7.3), (-26, 0)], None, seg=48)])
     P["capuz"] = acabar(capuz)
 
-    # ---- ferrolho curto: serrilha inclinada na frente, janela de ejeção à direita, trava de segurança atrás (dos
-    # dois lados), alça de mira baixa, entalhe da trava do ferrolho embaixo à esquerda e canal do cão por baixo
-    ferrolho = almofada("ferrolho", [(0, -17, 1.5), (0, 14, 1.5), (-84, 14, 5), (-90, 9, 3), (-90, -17, 1.5)], 14.5,
-                        2.4, inox)
+    # ---- ferrolho curto, alto e grosso como o cano: lados retos embaixo e afinando até o topo estreito (perfil
+    # lateral cruzado com a seção vista de frente); serrilha inclinada na frente, janela de ejeção à direita, trava de
+    # segurança atrás (dos dois lados), alça de mira baixa, entalhe da trava do ferrolho embaixo à esquerda e canal
+    # do cão por baixo
+    ferrolho = almofada("ferrolho", [(0, -17, 1.5), (0, 18, 1.5), (-84, 18, 5), (-90, 13, 3), (-90, -17, 1.5)], 16.0,
+                        1.5, inox)
+    booleano(ferrolho, [prisma_x("_secao_ferrolho", [(16, -18, 1.5), (16, 1, 3), (9, 18.6, 2), (-9, 18.6, 2),
+                                                     (-16, 1, 3), (-16, -18, 1.5)], -96, 6, 0.5, None)], 'INTERSECT')
     cortes = []
     for lado, (x_ini, n_ranh) in ((1, (-50, 13)), (-1, (-56, 7))):
         for k in range(n_ranh):
             x0 = x_ini + 3.1 * k
-            y0, y1 = (13.4, 20) if lado > 0 else (-20, -13.4)
-            cortes.append(girar(caixa(f"_serrilha{k}_{lado}", -0.7, 0.7, y0, y1, -12, 11), (0, math.radians(-12), 0),
-                                (x0, 0, 0)))
+            y0, y1 = (15.0, 20) if lado > 0 else (-20, -15.0)
+            cortes.append(girar(caixa(f"_serrilha{k}_{lado}", -0.7, 0.7, y0, y1, -13, 1), (0, math.radians(-12), 0),
+                                (x0, 0, -6)))
     cortes += [deslocar(almofada("_janela", [(-33, -6), (-5, -6), (-5, 9), (-33, 9)], 7, 1.0, None), (0, -13.5, 0)),
                caixa("_entalhe_trava", -16, 0.5, 11.5, 20, -18, -12.5),
                caixa("_canal_cao", -90.5, -55, -4.4, 4.4, -18, -12.5),
                tornear("_percussor", [(-92, 0), (-92, 1.7), (-86, 1.7), (-86, 0)], None, seg=24)]
     booleano(ferrolho, cortes)
     acabar(ferrolho, 0.3, 2)
-    alca = almofada("alca", [(-71, 12.5), (-56, 12.5), (-56.5, 15.5), (-58, 17), (-69.5, 17), (-71, 15.5)], 8.5, 0.6,
+    alca = almofada("alca", [(-71, 16.5), (-56, 16.5), (-56.5, 19.5), (-58, 21), (-69.5, 21), (-71, 19.5)], 6.5, 0.6,
                     escuro)
-    booleano(alca, [caixa("_entalhe_alca", -74, -52, -1.6, 1.6, 15, 19)])
+    booleano(alca, [caixa("_entalhe_alca", -74, -52, -1.6, 1.6, 19, 23)])
     acabar(alca, 0.2, 2)
-    seguranca = tornear("_seguranca", [(-16.4, 0), (-16.4, 3.8), (-15.8, 4.5), (15.8, 4.5), (16.4, 3.8), (16.4, 0)],
-                        escuro, pos=(-66, 0, 4), eixo='y', seg=32)
-    booleano(seguranca, [deslocar(almofada(f"_alavanca{lado}", [(-69, 6.5), (-62, 9), (-45, 13), (-43, 10.5),
-                                                               (-61, 1.5), (-69, 1.5)], 1.2, 0.45, None),
-                                  (0, lado * 15.4, 0)) for lado in (-1, 1)], 'UNION')
+    # a trava fica na parte reta do lado (embaixo do afinamento), para encostar no ferrolho
+    seguranca = tornear("_seguranca", [(-17.9, 0), (-17.9, 3.8), (-17.3, 4.5), (17.3, 4.5), (17.9, 3.8), (17.9, 0)],
+                        escuro, pos=(-66, 0, -3), eixo='y', seg=32)
+    booleano(seguranca, [deslocar(almofada(f"_alavanca{lado}", [(-69, -0.5), (-62, 2), (-45, 4), (-43, 1.5),
+                                                               (-61, -5.5), (-69, -5.5)], 1.2, 0.45, None),
+                                  (0, lado * 16.9, 0)) for lado in (-1, 1)], 'UNION')
     acabar(seguranca, 0.15, 2)
     _juntar(ferrolho, alca, escuro)
     _juntar(ferrolho, seguranca, escuro)
@@ -717,12 +724,12 @@ def construir():
 
     # placas de borracha pontilhada dos dois lados do cabo, com o parafuso no meio
     contorno = [(-26, -21, 5), (-63, -21, 8), (-80, -38, 10), (-106, -111, 5), (-42, -111, 5)]
-    punho = deslocar(almofada("empunhadura", contorno, 1.9, 1.2, borracha), (0, -14.3, 0))
-    booleano(punho, [deslocar(almofada("_placa", contorno, 1.9, 1.2, borracha), (0, 14.3, 0))], 'UNION')
+    punho = deslocar(almofada("empunhadura", contorno, 1.9, 1.2, borracha), (0, -16.3, 0))
+    booleano(punho, [deslocar(almofada("_placa", contorno, 1.9, 1.2, borracha), (0, 16.3, 0))], 'UNION')
     acabar(punho, angulo=40)
     uv_caixa(punho, 1 / 60)
     P["empunhadura"] = punho
-    P["parafuso_placa"] = pino("parafuso_placa", -66, -66, 2.8, 16.6, escuro)
+    P["parafuso_placa"] = pino("parafuso_placa", -66, -66, 2.8, 18.6, escuro)
 
     # ---- cão (desenhado abaixado; em repouso fica armado), gatilho, pinos e alavancas
     cao = almofada("cao", [(-91.2, -30), (-91.2, -2), (-92, 1.5, 1.5), (-95, 3.5, 1.5), (-100, 3, 2.5), (-103, 0, 2.5),
@@ -740,11 +747,11 @@ def construir():
     # entalhe do ferrolho quando ele fica aberto
     trava = deslocar(almofada("trava_ferrolho", [(26, -20), (26, -25.5), (20, -27), (-38, -22.6), (-45, -21),
                                                  (-46, -17.8), (-40, -17.6), (-34, -19.6), (18, -20)], 1.1, 0.45,
-                              escuro), (0, 13.9, 0))
-    booleano(trava, [tornear("_disco_trava", [(12.5, 0), (12.5, 3.6), (14.6, 3.6), (15.2, 3.0), (15.2, 0)], None,
+                              escuro), (0, 15.9, 0))
+    booleano(trava, [tornear("_disco_trava", [(14.5, 0), (14.5, 3.6), (16.6, 3.6), (17.2, 3.0), (17.2, 0)], None,
                              pos=(PIVO_TRAVA[0], 0, PIVO_TRAVA[2]), eixo='y', seg=32)], 'UNION')
     P["trava_ferrolho"] = acabar(trava, 0.15, 2)
-    P["botao_pente"] = acabar(tornear("botao_pente", [(11.6, 0), (11.6, 3.8), (14.0, 3.8), (14.9, 3.1), (14.9, 0)],
+    P["botao_pente"] = acabar(tornear("botao_pente", [(13.6, 0), (13.6, 3.8), (16.0, 3.8), (16.9, 3.1), (16.9, 0)],
                                       escuro, pos=(-23.5, 0, -33), eixo='y', seg=32))
 
     # ---- pente de 7: corpo de aço com furos de conferência e seguidor escuro, inclinados com o cabo; a base grande

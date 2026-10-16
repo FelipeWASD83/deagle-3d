@@ -1,15 +1,15 @@
 # Deagle 3D
 
 Uma Desert Eagle Mark XIX .50 AE com cano de 6" (a mesma arma da Desert Eagle do CS2), feita por código no
-Blender, do mesmo jeito que o `revolver-3d`. Mede uns 27 cm de comprimento e 15 cm de altura e tem uns 39 mil
-triângulos.
+Blender, do mesmo jeito que o `revolver-3d`. Mede uns 27 cm de comprimento, 15 cm de altura e 3,7 cm de largura,
+e tem uns 38 mil triângulos.
 
 As peças ficam separadas:
 
-- **Cano e corpo:** o bloco do cano, comprido e afunilado embaixo, com o painel rebaixado dos lados, as fendas do
-  trilho por baixo, a alma .50 raiada e a massa de mira. Atrás dele fica o capuz da câmara.
-- **Ferrolho:** curto, com a serrilha inclinada, a janela de ejeção à direita, a trava de segurança dos dois lados
-  e a alça de mira.
+- **Cano e corpo:** o bloco do cano, comprido, alto e grosso, afinando só no topo, com o painel rebaixado dos lados,
+  as fendas do trilho por baixo, a alma .50 raiada e a massa de mira. Atrás dele fica o capuz da câmara.
+- **Ferrolho:** curto, alto e afinando no topo como o cano, com a serrilha inclinada, a janela de ejeção à direita,
+  a trava de segurança dos dois lados e a alça de mira.
 - **Armação e cabo:** a armação de inox com o rabo de andorinha comprido, o guarda-mato de frente reta e estriada e
   as placas de borracha pontilhada no cabo.
 - **Peças pequenas:** o cão com furo, o gatilho, a trava do ferrolho e o botão do pente.

@@ -43,6 +43,17 @@ Conferir no `modelo/relatorio.txt`:
 
   **A primeira versão** (ferrolho comprido em bloco, cabo de borracha envolvendo tudo, guarda-mato redondo,
   trilho em cima) **foi o que ele chamou de Glock: não voltar a ela.**
+- **Parte de cima alta e grossa, afinando só no topo (1.1.0, pedido dele: "ela é mais alta e grossa além de ficar
+  mais fina na parte de cima"; e logo depois: "a parte de baixo não é afinada"):**
+  - cano e ferrolho têm 32 mm de largura;
+  - o ferrolho sobe até Z = 18 e o cano até Z = 15, mantendo o degrau de 3 mm;
+  - os lados descem retos até embaixo e só afinam acima de Z ≈ 2 a 4, até um topo de ~18 mm de largura;
+  - o ferrolho é o perfil lateral cruzado (INTERSECT) com essa seção vista de frente;
+  - a trava de segurança fica na parte reta do lado, e a alça de mira é estreita para caber no topo;
+  - a armação passou para 29 mm de largura (`MEIA_ARMACAO = 14.5`) para acompanhar, e as placas, a trava do
+    ferrolho e o botão do pente foram para fora junto.
+
+  Não voltar ao cano estreito em cima e largo no meio, nem afunilar a parte de baixo.
 - **Os utilitários de geometria são cópia dos do `revolver-3d`** (`almofada`, `tornear`, `cabo_solido`, `varrer`,
   `booleano`, `acabar`, `Faixa`...): os dois projetos são independentes. Diferenças:
   - `_juntar` recebe o material, não o índice, porque o booleano deixa espaços vazios na lista de materiais. Com o
